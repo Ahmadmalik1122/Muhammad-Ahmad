@@ -1,0 +1,137 @@
+{% comment %}
+  Ecomexperts Shopify Developer Test — Product popup snippet
+  Rendered once per grid product (6 total). Fixed 311x447 modal per Figma.
+  Expects: product (Shopify product object), section_id (string)
+
+  Dynamic data embedded here for the JS layer to read:
+    - #ee-popup-data-{{ product.id }}  → variants + options JSON (no hardcoded IDs)
+  This is what popup logic / variant selection / add-to-cart in
+  assets/ecomexperts-test.js reads from — see comments there.
+{% endcomment %}
+
+{%- liquid
+  assign color_option = null
+  assign size_option = null
+  for option in product.options_with_values
+    assign option_name_down = option.name | downcase
+    if option_name_down contains 'colo'
+      assign color_option = option
+    elsif option_name_down contains 'size'
+      assign size_option = option
+    endif
+  endfor
+-%}
+
+<div
+  class="ee-popup"
+  id="ee-popup-{{ product.id }}"
+  data-product-popup
+  data-product-id="{{ product.id }}"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="true"
+  hidden
+>
+  <div class="ee-popup__card">
+    <button type="button" class="ee-popup__close" data-popup-close aria-label="Close">
+      <span class="ee-icon-plus" aria-hidden="true"></span>
+    </button>
+
+    <div class="ee-popup__image">
+      {%- if product.featured_image != blank -%}
+        <img
+          src="{{ product.featured_image | image_url: width: 240 }}"
+          alt="{{ product.featured_image.alt | escape | default: product.title }}"
+          loading="lazy"
+          width="120"
+          height="140"
+        >
+      {%- endif -%}
+    </div>
+
+    <div class="ee-popup__content">
+      <p class="ee-popup__price" data-popup-price>{{ product.price | money }}</p>
+      <h3 class="ee-popup__title">{{ product.title }}</h3>
+      <div class="ee-popup__description">{{ product.description | strip_html | truncatewords: 30 }}</div>
+
+      {%- if color_option -%}
+        <div class="ee-variant-group" data-option-position="{{ color_option.position }}" data-option-name="color">
+          <p class="ee-variant-group__label">{{ color_option.name }}</p>
+          <div class="ee-swatches" role="radiogroup" aria-label="{{ color_option.name }}">
+            {%- for value in color_option.values -%}
+              <button
+                type="button"
+                class="ee-swatch{% if forloop.first %} is-selected{% endif %}"
+                style="--swatch-color: {{ value | downcase | strip }};"
+                data-option-value="{{ value | escape }}"
+                data-option-position="{{ color_option.position }}"
+                role="radio"
+                aria-checked="{% if forloop.first %}true{% else %}false{% endif %}"
+              >
+                <span class="ee-swatch__dot" aria-hidden="true"></span>
+                <span class="ee-swatch__label">{{ value }}</span>
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if size_option -%}
+        <div class="ee-variant-group" data-option-position="{{ size_option.position }}" data-option-name="size">
+          <button type="button" class="ee-size-toggle" data-size-toggle aria-expanded="false">
+            <span data-size-toggle-label>Choose your size</span>
+            <span class="ee-size-toggle__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="ee-size-list" data-size-list hidden role="radiogroup" aria-label="{{ size_option.name }}">
+            {%- for value in size_option.values -%}
+              <button
+                type="button"
+                class="ee-size-option"
+                data-option-value="{{ value | escape }}"
+                data-option-position="{{ size_option.position }}"
+                role="radio"
+                aria-checked="false"
+              >
+                {{ value }}
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <button type="button" class="ee-add-to-cart" data-add-to-cart disabled>
+        <span class="ee-add-to-cart__divider" aria-hidden="true"></span>
+        <span data-add-to-cart-label>Add to cart</span>
+      </button>
+      <p class="ee-popup__error" data-popup-error hidden></p>
+    </div>
+  </div>
+</div>
+
+{%- comment -%}
+  Raw product data for assets/ecomexperts-test.js.
+  No variant ID is ever hardcoded in Liquid or JS — the script reads
+  this block at runtime and resolves the matching variant from the
+  selected option values.
+{%- endcomment -%}
+<script type="application/json" data-product-json="{{ product.id }}">
+  {
+    "id": {{ product.id | json }},
+    "title": {{ product.title | json }},
+    "url": {{ product.url | json }},
+    "optionsWithValues": {{ product.options_with_values | json }},
+    "variants": [
+      {%- for variant in product.variants -%}
+        {
+          "id": {{ variant.id | json }},
+          "title": {{ variant.title | json }},
+          "available": {{ variant.available | json }},
+          "price": {{ variant.price | json }},
+          "option1": {{ variant.option1 | json }},
+          "option2": {{ variant.option2 | json }},
+          "option3": {{ variant.option3 | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+</script>

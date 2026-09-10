@@ -1,0 +1,121 @@
+{% comment %}
+  Ecomexperts Shopify Developer Test — Banner section
+  Built from scratch (no Dawn section/component reused).
+  Reproduces the Figma "Gift Guide" hero banner:
+    - top utility bar + sustainability strip
+    - hero heading / body / CTA button over an illustrated background
+    - CTA button hover: 300ms cubic-bezier(0,0,0.58,1) yellow (#fff544) fill-sweep,
+      text flips to black on hover (see assets/ecomexperts-test.css .ee-btn)
+  All visible copy is exposed as Theme Customizer settings below.
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lustria&display=swap"
+  rel="stylesheet"
+>
+{{ 'ecomexperts-test.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="ee-banner"
+  id="EcomexpertsBanner-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+>
+  {%- comment -%} Top utility bar {%- endcomment -%}
+  <div class="ee-topbar">
+    <div class="ee-topbar__logo" aria-hidden="true">{{ section.settings.logo_text | default: 'STORE' }}</div>
+    {%- if section.settings.topbar_text != blank -%}
+      <p class="ee-topbar__text">{{ section.settings.topbar_text }}</p>
+    {%- endif -%}
+    {%- if section.settings.topbar_button_label != blank -%}
+      <a href="{{ section.settings.topbar_button_link | default: '#' }}" class="ee-btn ee-btn--small">
+        <span class="ee-btn__fill" aria-hidden="true"></span>
+        <span class="ee-btn__label">{{ section.settings.topbar_button_label }}</span>
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Sustainability strip (differs desktop/mobile per Figma — two independent settings) {%- endcomment -%}
+  {%- if section.settings.strip_text_desktop != blank -%}
+    <div class="ee-strip ee-strip--desktop">
+      <p>{{ section.settings.strip_text_desktop }}</p>
+    </div>
+  {%- endif -%}
+  {%- if section.settings.strip_text_mobile != blank -%}
+    <div class="ee-strip ee-strip--mobile">
+      <p>{{ section.settings.strip_text_mobile }}</p>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Hero {%- endcomment -%}
+  <div
+    class="ee-hero"
+    {% if section.settings.background_image != blank %}
+      style="background-image: url({{ section.settings.background_image | image_url: width: 2880 }});"
+    {% endif %}
+  >
+    <div class="ee-hero__panel">
+      {%- if section.settings.heading != blank -%}
+        <h1 class="ee-hero__heading">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <div class="ee-hero__body">{{ section.settings.body }}</div>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="ee-btn ee-btn--large">
+          <span class="ee-btn__fill" aria-hidden="true"></span>
+          <span class="ee-btn__divider" aria-hidden="true"></span>
+          <span class="ee-btn__label">{{ section.settings.button_label }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ecomexperts Banner",
+  "tag": "section",
+  "class": "ee-banner-section",
+  "settings": [
+    { "type": "header", "content": "Top utility bar" },
+    { "type": "text", "id": "logo_text", "label": "Logo / wordmark text", "default": "STORE" },
+    { "type": "text", "id": "topbar_text", "label": "Top bar text", "default": "Find the ideal gift for your loved ones." },
+    { "type": "text", "id": "topbar_button_label", "label": "Top bar button label", "default": "Shop now" },
+    { "type": "url", "id": "topbar_button_link", "label": "Top bar button link" },
+
+    { "type": "header", "content": "Sustainability strip" },
+    {
+      "type": "text",
+      "id": "strip_text_desktop",
+      "label": "Strip text (desktop)",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+    },
+    {
+      "type": "text",
+      "id": "strip_text_mobile",
+      "label": "Strip text (mobile)",
+      "info": "Shown only below 750px. Leave blank to hide on mobile.",
+      "default": "SUSTAINABLE, ETHICALLY MADE ACTIVEWEAR"
+    },
+
+    { "type": "header", "content": "Hero" },
+    { "type": "image_picker", "id": "background_image", "label": "Background image" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The Gift Guide" },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body text",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>"
+    },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [
+    {
+      "name": "Ecomexperts Banner"
+    }
+  ]
+}
+{% endschema %}
