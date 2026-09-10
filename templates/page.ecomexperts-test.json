@@ -10,12 +10,12 @@
         "heading": "Tisso vison in the wild"
       },
       "blocks": {
-        "product-1": { "type": "product_item", "settings": { "product": "" } },
-        "product-2": { "type": "product_item", "settings": { "product": "" } },
-        "product-3": { "type": "product_item", "settings": { "product": "" } },
-        "product-4": { "type": "product_item", "settings": { "product": "" } },
-        "product-5": { "type": "product_item", "settings": { "product": "" } },
-        "product-6": { "type": "product_item", "settings": { "product": "" } }
+        "product-1": { "type": "product_item", "settings": {} },
+        "product-2": { "type": "product_item", "settings": {} },
+        "product-3": { "type": "product_item", "settings": {} },
+        "product-4": { "type": "product_item", "settings": {} },
+        "product-5": { "type": "product_item", "settings": {} },
+        "product-6": { "type": "product_item", "settings": {} }
       },
       "block_order": ["product-1", "product-2", "product-3", "product-4", "product-5", "product-6"]
     }
